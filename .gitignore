@@ -1,0 +1,37 @@
+# Secrets — never commit
+.env
+
+# Data and generated outputs
+data/
+outputs/
+!data/.gitkeep
+!outputs/checkpoints/.gitkeep
+!outputs/logs/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Model weights
+*.pth
+*.pt
+*.onnx
+
+# OS
+.DS_Store
+
+# Datasets — sit at repo root, not under data/ (too large for GitHub)
+RWF-2000/
+HockeyFights/
+Real Life Violence Dataset/
+real life violence situations/
+
+# Video clips (large / copyrighted — the FandangoNOW movie clip)
+*.mp4
+*.avi

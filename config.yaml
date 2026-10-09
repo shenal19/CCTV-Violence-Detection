@@ -1,0 +1,55 @@
+# Central configuration. Edit values here instead of hard-coding them in scripts.
+
+project:
+  seed: 42
+  device: "auto"            # auto | cuda | cpu
+
+paths:
+  data_root: "data"
+  rwf2000_root: "RWF-2000"          # sits directly in your project folder (VD), next to src/
+  rlvs_root: "data/RLVS"            # cross-dataset test (optional)
+  outputs_root: "outputs"
+  checkpoints_root: "outputs/checkpoints"
+  logs_root: "outputs/logs"
+
+data:
+  num_frames: 16
+  img_size: 112
+  num_classes: 2
+  class_names: ["NonViolence", "Violence"]
+  use_official_split: true
+  val_fraction: 0.1         # carved from the official TRAIN portion only
+  num_workers: 2            # Windows: start at 0 (safe with decord); raise to 2-4 later once it works
+
+model:
+  name: "r2plus1d_18"       # primary model; VideoMAE handled in a separate Kaggle script
+  pretrained: true          # Kinetics-400 weights
+
+train:
+  batch_size: 4             # drop to 2 if the 4GB card runs out of memory
+  epochs: 20
+  lr: 0.0001
+  weight_decay: 0.00001
+  amp: true                 # mixed precision (recommended on 4GB)
+  freeze_backbone_epochs: 3 # train the head first, then unfreeze
+  early_stopping_patience: 5
+
+eval:
+  num_clips: 5              # multi-clip test-time averaging
+  threshold: 0.5            # tuned on validation later
+
+gate:                       # temporal confidence gate (inference only)
+  window_size: 8            # recent scores to smooth over
+  smoothing: "ema"          # ema | mean
+  confirm_threshold: 0.8    # per-window score required to count as "violent"
+  consecutive_required: 5   # consecutive windows above threshold before firing
+  cooldown_seconds: 30      # minimum gap between alerts
+
+alert:
+  enabled: true            # turn on for the demo
+  channels: ["email"]       # email | whatsapp
+  # real credentials live in .env, never here
+
+demo:
+  source: "webcam"          # webcam | <path to a video file>
+  stride: 8                 # frames between rolling-window inferences
